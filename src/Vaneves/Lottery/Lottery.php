@@ -15,7 +15,7 @@ class Lottery
 		if(filesize($file) == 0) {
 			throw new \RuntimeException('File ' . $file . ' is empty');
 		}
-		
+
 		libxml_use_internal_errors(true);
 		$this->doc = new \DOMDocument;
 		$this->doc->preserveWhiteSpace = false;
@@ -26,7 +26,7 @@ class Lottery
 	protected function findRegex($subject, $regex, $value = null)
 	{
 		$matches = [];
-		if(preg_match($regex, $subject, $matches)) {
+		if(preg_match($regex, trim($subject), $matches)) {
 			$value = $matches[1];
 		}
 		return trim($value);
@@ -75,7 +75,7 @@ class Lottery
 		$query = $this->html->query('//*[@id="resultados"]/div[3]/div/p[@class="description"]');
 		foreach ($query as $node) {
 			$apportionment = new \stdClass;
-			$apportionment->type = $this->findRegex($node->nodeValue, '/(.+)\s(\-\s)?/');
+			$apportionment->type = explode('-', $this->findRegex($node->nodeValue, '#(.+)#'))[0];
 			$apportionment->amount = $this->findRegex($node->nodeValue, '/([\d]+) aposta/', '0');
 			$apportionment->value = $this->findRegex($node->nodeValue, '/R\$ (.+)/', '0,00');
 
